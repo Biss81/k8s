@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-todo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: simple-todo
+  template:
+    metadata:
+      labels:
+        app: simple-todo
+    spec:
+      containers:
+      - name: simple-todo
+        image: biss81/simple-todo:0.2
+        ports: 
+          - containerPort: 5000
+        env:
+          - name: MONGO_URI
+            value: mongodb://admin:secret@mongo:27017/
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-todo
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 5000
+      nodePort: 30010
+  selector:
+    app: simple-todo
